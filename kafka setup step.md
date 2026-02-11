@@ -162,3 +162,148 @@ docker-compose down -v
 ---
 
 ✨ **Your Kafka + Zookeeper environment is now ready on AWS EC2!**
+
+
+---
+if facing error
+-
+ERROR: client version 1.25 is too old.
+Minimum supported API version is 1.44
+---
+solution
+-
+---
+## ❌ Error Explained
+
+```
+ERROR: client version 1.25 is too old.
+Minimum supported API version is 1.44
+```
+
+This means:
+
+* Your **docker-compose (or Docker client)** is **very old**
+* Your **Docker Engine** is **new**
+* They cannot talk to each other due to **API version incompatibility**
+
+---
+
+## ✅ Root Cause (Most Common)
+
+You are using **docker-compose v1.x** (Python-based, deprecated)
+
+Check:
+
+```bash
+docker-compose version
+```
+
+If output shows something like:
+
+```
+docker-compose version 1.25.x
+```
+
+👉 That is the problem.
+
+---
+
+## ✅ Solution (Recommended & Correct)
+
+### 🔥 Upgrade to Docker Compose V2 (Plugin-based)
+
+Docker Compose v2 uses:
+
+```bash
+docker compose
+```
+
+(not `docker-compose`)
+
+---
+
+### 🧹 Step 1: Remove old docker-compose (Linux)
+
+```bash
+sudo rm /usr/local/bin/docker-compose
+```
+
+or if installed via apt:
+
+```bash
+sudo apt remove docker-compose
+```
+
+---
+
+### 🚀 Step 2: Install Docker Compose v2
+
+```bash
+sudo apt update
+sudo apt install docker-compose-plugin -y
+```
+
+Verify:
+
+```bash
+docker compose version
+```
+
+Expected:
+
+```
+Docker Compose version v2.xx.x
+```
+
+---
+
+### ▶️ Step 3: Run Your File (IMPORTANT)
+
+Use **space**, not hyphen:
+
+```bash
+docker compose up -d
+```
+
+❌ WRONG:
+
+```bash
+docker-compose up -d
+```
+
+✅ CORRECT:
+
+```bash
+docker compose up -d
+```
+
+---
+
+## ✅ Your `docker-compose.yml` is VALID ✅
+
+Your Kafka + Zookeeper config is **correct** and **will work** once Compose is updated.
+
+You **do NOT need** to change:
+
+```yaml
+version: '2.2'
+```
+
+Compose v2 fully supports it.
+
+---
+
+## 🔎 Quick Verification Commands
+
+```bash
+docker version
+docker compose version
+```
+
+---
+
+## 🧠 Pro Tip (Kafka Dev Setup)
+
+For local development (Spring Boot / Microservices), this is fine.
+
+---
